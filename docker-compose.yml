@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql: 8.0
+    container_name: workout-mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: workout_db
+      MYSQL_USER: workout_user
+      MYSQL_PASSWORD: workout_pass
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - workout-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: workpout-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - workout-network
+
+volumes:
+  mysql_data:
+
+networks:
+  workout-network:
+    driver: bridge
