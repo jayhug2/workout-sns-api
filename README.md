@@ -4,7 +4,7 @@ Spring Boot REST API for Workout SNS
 ## 기술 스택
 
 - Java 17
-- Spring Boot 3.2.x
+- Spring Boot 4.0.x
 - MySQL 8.0
 - Redis 7.2
 - Docker
@@ -12,18 +12,12 @@ Spring Boot REST API for Workout SNS
 
 ## 로컬 실행
 
-### 1. 환경변수 설정
-```bash
-cp .env.example .env
-# .env 파일 열어서 실제 값으로 수정
-```
-
-### 2. Docker로 DB 실행
+### 1. Docker로 DB 실행
 ```bash
 docker-compose up -d
 ```
 
-### 3. Spring Boot 실행
+### 2. Spring Boot 실행
 ```bash
 ./gradlew bootRun
 ```
