@@ -1,5 +1,7 @@
 package com.workout.api.controller;
 
+import com.workout.api.dto.LoginRequest;
+import com.workout.api.dto.LoginResponse;
 import com.workout.api.dto.UserResponse;
 import com.workout.api.dto.UserSignupRequest;
 import com.workout.api.entity.User;
@@ -30,5 +32,18 @@ public class UserController {
 
         UserResponse response = new UserResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        User user = userService.login(request.getEmail(), request.getPassword());
+
+        LoginResponse response = new LoginResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                "로그인 성공"
+        );
+        return ResponseEntity.ok(response);
     }
 }
