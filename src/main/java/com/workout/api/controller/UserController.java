@@ -36,13 +36,16 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        User user = userService.login(request.getEmail(), request.getPassword());
+        String token = userService.login(request.getEmail(), request.getPassword());
+
+        User user = userService.findByEmail(request.getEmail());
 
         LoginResponse response = new LoginResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
-                "로그인 성공"
+                "로그인 성공",
+                token
         );
         return ResponseEntity.ok(response);
     }
