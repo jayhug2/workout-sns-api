@@ -1,5 +1,6 @@
 package com.workout.api.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,17 @@ public class JwtTokenProvider {
                 .signWith(secretKey)
                 .compact();
     }
+
+    public String getUserEmailFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.getSubject();
+    }
+
 
     public boolean validateToken(String token) {
         try {

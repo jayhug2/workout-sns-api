@@ -1,6 +1,7 @@
 package com.workout.api.controller;
 
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,5 +21,13 @@ public class HealthController {
         response.put("timestamp", LocalDateTime.now());
         response.put("service", "Workout SNS API");
         return response;
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Map<String, Object>> test() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "인증 성공!");
+        response.put("timestamp", LocalDateTime.now());
+        return ResponseEntity.ok(response);
     }
 }
