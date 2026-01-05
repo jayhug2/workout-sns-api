@@ -3,6 +3,8 @@ package com.workout.api.controller;
 import com.workout.api.dto.*;
 import com.workout.api.entity.User;
 import com.workout.api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "User", description = "사용자 관련 API")
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/signup")
+    @Operation(summary = "회원가입")
     public ResponseEntity<UserResponse> signup(@Valid @RequestBody UserSignupRequest request) {
         User user = userService.createUser(
                 request.getEmail(),
@@ -32,6 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "로그인")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResult result = userService.login(request.getEmail(), request.getPassword());
 
