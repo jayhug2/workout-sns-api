@@ -1,5 +1,6 @@
 package com.workout.api.service;
 
+import com.workout.api.dto.LoginResult;
 import com.workout.api.entity.User;
 import com.workout.api.repository.UserRepository;
 import com.workout.api.util.JwtTokenProvider;
@@ -38,7 +39,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
-    public String login(String email, String password) {
+    public LoginResult login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
@@ -46,6 +47,8 @@ public class UserService {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        return jwtTokenProvider.generateToken(user.getEmail());
+        String token = jwtTokenProvider.generateToken(user.getEmail());
+
+        return new LoginResult(user, token);
     }
 }

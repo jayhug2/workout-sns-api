@@ -1,9 +1,6 @@
 package com.workout.api.controller;
 
-import com.workout.api.dto.LoginRequest;
-import com.workout.api.dto.LoginResponse;
-import com.workout.api.dto.UserResponse;
-import com.workout.api.dto.UserSignupRequest;
+import com.workout.api.dto.*;
 import com.workout.api.entity.User;
 import com.workout.api.service.UserService;
 import jakarta.validation.Valid;
@@ -36,16 +33,15 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        String token = userService.login(request.getEmail(), request.getPassword());
+        LoginResult result = userService.login(request.getEmail(), request.getPassword());
 
-        User user = userService.findByEmail(request.getEmail());
 
         LoginResponse response = new LoginResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getNickname(),
+                result.getUser().getId(),
+                result.getUser().getEmail(),
+                result.getUser().getNickname(),
                 "로그인 성공",
-                token
+                result.getToken()
         );
         return ResponseEntity.ok(response);
     }
