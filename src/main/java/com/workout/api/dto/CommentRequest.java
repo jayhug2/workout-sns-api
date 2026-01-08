@@ -9,12 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostRequest {
+public class CommentRequest {
 
-    @NotBlank(message = "제목은 필수입니다")
-    @Size(max = 200, message = "제목은 200자 이하여야 합니다")
-    private String title;
-
-    @NotBlank(message = "내용은 필수입니다")
+    @NotBlank(message = "댓글 내용은 필수입니다.")
+    @Size(max = 500, message = "댓글은 500자 이하여야 합니다.")
     private String content;
 }

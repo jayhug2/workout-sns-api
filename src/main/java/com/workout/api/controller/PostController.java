@@ -28,8 +28,8 @@ public class PostController {
             Authentication authentication,
             @Valid @RequestBody PostRequest request
             ) {
-        String email = authentication.getName();
-        PostResponse response = postService.create(email, request);
+        Long userId = (Long) authentication.getPrincipal();
+        PostResponse response = postService.create(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -54,8 +54,8 @@ public class PostController {
             Authentication authentication,
             @Valid @RequestBody PostRequest request
     ) {
-        String email = authentication.getName();
-        PostResponse response = postService.update(id, email, request);
+        Long userId = (Long) authentication.getPrincipal();
+        PostResponse response = postService.update(id, userId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -65,8 +65,8 @@ public class PostController {
             @PathVariable Long id,
             Authentication authentication
     ) {
-        String email = authentication.getName();
-        postService.delete(id, email);
+        Long userId = (Long) authentication.getPrincipal();
+        postService.delete(id, userId);
         return ResponseEntity.noContent().build();
     }
 }
