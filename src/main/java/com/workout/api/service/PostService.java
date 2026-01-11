@@ -7,6 +7,8 @@ import com.workout.api.entity.User;
 import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +42,15 @@ public class PostService {
         return PostResponse.from(post);
     }
 
-    public List<PostResponse> findAll() {
-        return postRepository.findAll().stream()
-                .map(PostResponse::from)
-                .toList();
+//    public List<PostResponse> findAll() {
+//        return postRepository.findAll().stream()
+//                .map(PostResponse::from)
+//                .toList();
+//    }
+
+    public Page<PostResponse> findAll(Pageable pageable) {
+        Page<Post> posts = postRepository.findAll(pageable);
+        return posts.map(PostResponse::from);
     }
 
     @Transactional

@@ -7,6 +7,8 @@ import com.workout.api.repository.LikeRepository;
 import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,11 +55,11 @@ public class LikeService {
         return likeRepository.existsByPostIdAndUserId(postId, userId);
     }
 
-    public List<Like> getLikeUsers(Long postId) {
+    public Page<Like> getLikeUsers(Long postId, Pageable pageable) {
         postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        return likeRepository.findByPostIdOrderByCreatedAtDesc(postId);
+        return likeRepository.findByPostIdOrderByCreatedAtDesc(postId, pageable);
     }
 
 }
