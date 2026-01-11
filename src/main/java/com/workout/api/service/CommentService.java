@@ -7,6 +7,8 @@ import com.workout.api.repository.CommentRepository;
 import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +41,8 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public List<Comment> getCommentsByPost(Long postId) {
-        return commentRepository.findByPostIdOrderByCreatedAtAsc(postId);
+    public Page<Comment> getCommentsByPost(Long postId, Pageable pageable) {
+        return commentRepository.findByPostIdOrderByCreatedAtAsc(postId, pageable);
     }
 
     @Transactional

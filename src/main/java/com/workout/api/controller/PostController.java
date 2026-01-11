@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,8 +44,8 @@ public class PostController {
 
     @GetMapping
     @Operation(summary = "게시글 목록 조회")
-    public ResponseEntity<List<PostResponse>> findAll() {
-        List<PostResponse> responses = postService.findAll();
+    public ResponseEntity<Page<PostResponse>> findAll(Pageable pageable) {
+        Page<PostResponse> responses = postService.findAll(pageable);
         return ResponseEntity.ok(responses);
     }
 

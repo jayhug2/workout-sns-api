@@ -6,6 +6,8 @@ import com.workout.api.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -56,14 +58,13 @@ public class LikeController {
 
     @GetMapping("/{postId}/likes")
     @Operation(summary = "좋아요 누른 사용자 목록")
-    public ResponseEntity<List<LikeResponse>> getLikeUsers(
-            @PathVariable Long postId
+    public ResponseEntity<Page<LikeResponse>> getLikeUsers(
+            @PathVariable Long postId,
+            Pageable pageable
     ) {
-        List<Like> likes = likeService.getLikeUsers(postId);
+        Page<Like> likes = likeService.getLikeUsers(postId, pageable);
 
-        List<LikeResponse> responses = likes.stream()
-                .map(LikeResponse::from)
-                .collect(Collectors.toList());
+        Page<LikeResponse> responses = likes.map(LikeResponse::from);
 
         return ResponseEntity.ok(responses);
     }

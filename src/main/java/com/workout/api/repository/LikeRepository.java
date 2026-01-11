@@ -2,6 +2,8 @@ package com.workout.api.repository;
 
 import com.workout.api.entity.Like;
 import com.workout.api.entity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +17,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     Long countByPostId(Long postId);
 
-    List<Like> findByPostIdOrderByCreatedAtDesc(Long postId);
+    Page<Like> findByPostIdOrderByCreatedAtDesc(Long postId, Pageable pageable);
 
     List<Like> findByUserIdOrderByCreatedAtDesc(Long userId);
 

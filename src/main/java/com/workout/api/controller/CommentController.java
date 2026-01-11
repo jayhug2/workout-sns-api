@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -45,14 +47,15 @@ public class CommentController {
 
     @GetMapping("/post/{postId}/comments")
     @Operation(summary = "댓글 목록 조회")
-    public ResponseEntity<List<CommentResponse>> getComments(
-            @PathVariable Long postId
-    ) {
-        List<Comment> comments = commentService.getCommentsByPost(postId);
+    public ResponseEntity<Page<CommentResponse>> getComments(
+            @PathVariable Long postId,
+            Pageable pageable) {
+        Page<Comment> comments = commentService.getCommentsByPost(postId, pageable);
 
-        List<CommentResponse> responses = comments.stream()
-                .map(CommentResponse::from)
-                .collect(Collectors.toList());
+//        List<CommentResponse> responses = comments.stream()
+//                .map(CommentResponse::from)
+//                .collect(Collectors.toList());
+        Page<CommentResponse> responses = comments.map(CommentResponse::from);
 
         return ResponseEntity.ok(responses);
     }
