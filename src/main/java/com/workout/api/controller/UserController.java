@@ -31,7 +31,7 @@ public class UserController {
                 request.getNickname()
         );
 
-        UserResponse response = new UserResponse(user);
+        UserResponse response = UserResponse.from(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
