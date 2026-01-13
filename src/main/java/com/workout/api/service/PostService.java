@@ -42,12 +42,6 @@ public class PostService {
         return PostResponse.from(post);
     }
 
-//    public List<PostResponse> findAll() {
-//        return postRepository.findAll().stream()
-//                .map(PostResponse::from)
-//                .toList();
-//    }
-
     public Page<PostResponse> findAll(Pageable pageable) {
         Page<Post> posts = postRepository.findAll(pageable);
         return posts.map(PostResponse::from);
@@ -78,6 +72,20 @@ public class PostService {
         }
 
         postRepository.delete(post);
+    }
 
+    public Page<PostResponse> searchByTitle(String keyword, Pageable pageable) {
+        Page<Post> posts = postRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        return posts.map(PostResponse::from);
+    }
+
+    public Page<PostResponse> searchByContent(String keyword, Pageable pageable) {
+        Page<Post> posts = postRepository.findByContentContainingIgnoreCase(keyword, pageable);
+        return posts.map(PostResponse::from);
+    }
+
+    public Page<PostResponse> searchByTitleOrContent(String keyword, Pageable pageable) {
+        Page<Post> posts = postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable);
+        return posts.map(PostResponse::from);
     }
 }

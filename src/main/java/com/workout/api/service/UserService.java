@@ -1,10 +1,13 @@
 package com.workout.api.service;
 
 import com.workout.api.dto.LoginResult;
+import com.workout.api.dto.UserResponse;
 import com.workout.api.entity.User;
 import com.workout.api.repository.UserRepository;
 import com.workout.api.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +53,10 @@ public class UserService {
         String token = jwtTokenProvider.generateToken(user.getEmail(), user.getId());
 
         return new LoginResult(user, token);
+    }
+
+    public Page<UserResponse> searchByNickname(String keyword, Pageable pageable) {
+        Page<User> users = userRepository.findByNicknameContainingIgnoreCase(keyword, pageable);
+        return users.map(UserResponse::from);
     }
 }
