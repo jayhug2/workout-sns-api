@@ -2,8 +2,10 @@ package com.workout.api.service;
 
 import com.workout.api.dto.PostRequest;
 import com.workout.api.dto.PostResponse;
+import com.workout.api.entity.Image;
 import com.workout.api.entity.Post;
 import com.workout.api.entity.User;
+import com.workout.api.repository.ImageRepository;
 import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
 
     @Transactional
     public PostResponse create(Long userId, PostRequest request) {
@@ -32,6 +35,21 @@ public class PostService {
         post.setContent(request.getContent());
         post.setUser(user);
         Post savedPost = postRepository.save(post);
+
+        if (request.getImageIds() != null && !request.getImageIds().isEmpty()) {
+            List<Image> images = imageRepository.findAllById(request.getImageIds());
+
+            for (Image image : images) {
+                if (!image.getUser().getId().equals(userId)) {
+                    throw new IllegalArgumentException("다른 사용자의 이미지는 사용할 수 없습니다.");
+                }
+                if (image.getPost() != null) {
+                    throw new IllegalArgumentException("이미 다른 게시글에 연결된 이미지입니다");
+                }
+                savedPost.addImage(image);
+            }
+            imageRepository.saveAll(images);
+        }
 
         return PostResponse.from(savedPost);
     }
