@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,4 +20,6 @@ public class PostRequest {
 
     @NotBlank(message = "내용은 필수입니다")
     private String content;
+
+    private List<Long> imageIds = new ArrayList<>();
 }

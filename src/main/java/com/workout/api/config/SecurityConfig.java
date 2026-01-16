@@ -32,11 +32,12 @@ public class SecurityConfig {
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/health",
+                                "/api/images/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html",     // 🆕 추가
+                                "/swagger-ui.html",
                                 "/v3/api-docs/**",
-                                "/swagger-resources/**", // 🆕 추가
-                                "/webjars/**"           // 🆕 추가
+                                "/swagger-resources/**",
+                                "/webjars/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
