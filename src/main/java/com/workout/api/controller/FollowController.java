@@ -4,6 +4,7 @@ package com.workout.api.controller;
 import com.workout.api.dto.FollowResponse;
 import com.workout.api.entity.Follow;
 import com.workout.api.service.FollowService;
+import com.workout.api.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,10 +25,9 @@ public class FollowController {
     @PostMapping("/{userId}/follow")
     @Operation(summary = "팔로우/언팔로우")
     public ResponseEntity<Void> toggleFollow(
-            @PathVariable Long userId,
-            Authentication authentication
+            @PathVariable Long userId
     ) {
-        Long followerId = (Long) authentication.getPrincipal();
+        Long followerId = SecurityUtil.getCurrentUserId();
         followService.toggleFollow(followerId, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -61,10 +60,9 @@ public class FollowController {
     @GetMapping("/{userId}/follow/me")
     @Operation(summary = "팔로우 여부 확인")
     public ResponseEntity<Boolean> isFollowing(
-            @PathVariable Long userId,
-            Authentication authentication
+            @PathVariable Long userId
     ) {
-        Long followerId = (Long) authentication.getPrincipal();
+        Long followerId = SecurityUtil.getCurrentUserId();
         boolean isFollowing = followService.isFollowing(followerId, userId);
 
         return ResponseEntity.ok(isFollowing);
