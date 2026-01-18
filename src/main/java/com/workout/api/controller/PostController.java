@@ -3,6 +3,7 @@ package com.workout.api.controller;
 import com.workout.api.dto.PostRequest;
 import com.workout.api.dto.PostResponse;
 import com.workout.api.service.PostService;
+import com.workout.api.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,10 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -27,10 +26,9 @@ public class PostController {
     @PostMapping
     @Operation(summary = "게시글 생성")
     public ResponseEntity<PostResponse> create(
-            Authentication authentication,
             @Valid @RequestBody PostRequest request
             ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
         PostResponse response = postService.create(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -53,10 +51,9 @@ public class PostController {
     @Operation(summary = "게시글 수정")
     public ResponseEntity<PostResponse> update(
             @PathVariable Long id,
-            Authentication authentication,
             @Valid @RequestBody PostRequest request
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
         PostResponse response = postService.update(id, userId, request);
         return ResponseEntity.ok(response);
     }
@@ -64,10 +61,9 @@ public class PostController {
     @DeleteMapping("/{id}")
     @Operation(summary = "게시글 삭제")
     public ResponseEntity<Void> delete(
-            @PathVariable Long id,
-            Authentication authentication
+            @PathVariable Long id
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
         postService.delete(id, userId);
         return ResponseEntity.noContent().build();
     }

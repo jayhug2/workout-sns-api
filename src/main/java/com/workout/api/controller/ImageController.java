@@ -3,6 +3,7 @@ package com.workout.api.controller;
 import com.workout.api.dto.ImageResponse;
 import com.workout.api.entity.Image;
 import com.workout.api.service.ImageService;
+import com.workout.api.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,10 +25,9 @@ public class ImageController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "이미지 업로드")
     public ResponseEntity<ImageResponse> uploadImage(
-            @RequestParam("file") MultipartFile file,
-            Authentication authentication
+            @RequestParam("file") MultipartFile file
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
         Image image = imageService.uploadImage(file, userId);
         ImageResponse response = ImageResponse.from(image);
 
@@ -51,10 +50,9 @@ public class ImageController {
     @DeleteMapping("/{id}")
     @Operation(summary = "이미지 삭제")
     public ResponseEntity<Void> deleteImage(
-            @PathVariable Long id,
-            Authentication authentication
+            @PathVariable Long id
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
         imageService.deleteImage(id, userId);
 
         return ResponseEntity.noContent().build();

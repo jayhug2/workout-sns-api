@@ -4,7 +4,7 @@ import com.workout.api.dto.CommentRequest;
 import com.workout.api.dto.CommentResponse;
 import com.workout.api.entity.Comment;
 import com.workout.api.service.CommentService;
-import com.workout.api.util.JwtTokenProvider;
+import com.workout.api.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,11 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -30,10 +26,9 @@ public class CommentController {
     @Operation(summary = "댓글 작성")
     public ResponseEntity<CommentResponse> createComment(
             @PathVariable Long postId,
-            Authentication authentication,
             @Valid @RequestBody CommentRequest request
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
 
         Comment comment = commentService.createComment(
                 postId,
@@ -64,10 +59,9 @@ public class CommentController {
     @Operation(summary = "댓글 수정")
     public ResponseEntity<CommentResponse> updateComment(
             @PathVariable Long commentId,
-            Authentication authentication,
             @Valid @RequestBody CommentRequest request
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
 
         Comment comment = commentService.updateComment(
                 commentId,
@@ -82,10 +76,9 @@ public class CommentController {
     @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "댓글 삭제")
     public ResponseEntity<Void> deleteComment(
-        @PathVariable Long commentId,
-        Authentication authentication
+        @PathVariable Long commentId
     ) {
-        Long userId = (Long) authentication.getPrincipal();
+        Long userId = SecurityUtil.getCurrentUserId();
         commentService.deleteComment(commentId, userId);
 
         return ResponseEntity.noContent().build();
