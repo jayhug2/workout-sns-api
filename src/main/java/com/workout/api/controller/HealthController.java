@@ -1,38 +1,58 @@
 package com.workout.api.controller;
 
 
+import com.workout.api.dto.HealthCheckResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
-@Tag(name = "Health", description = "서버 상태 확인 API")
+@RequestMapping("/api/health")
+@RequiredArgsConstructor
+@Tag(name = "Health", description = "헬스 체크 API")
 public class HealthController {
 
-    @GetMapping("/health")
+    private final DataSource dataSource;
+    private final StringRedisTemplate redisTemplate;
+
+    @GetMapping
     @Operation(summary = "헬스체크")
-    public Map<String, Object> healthCheck() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "OK");
-        response.put("timestamp", LocalDateTime.now());
-        response.put("service", "Workout SNS API");
-        return response;
+    public ResponseEntity<HealthCheckResponse> healthCheck() {
+        String dbStatus = checkDatabase();
+        String redisStatus = checkRedis();
+
+        HealthCheckResponse response = HealthCheckResponse.up(dbStatus, redisStatus);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/test")
-    @Operation(summary = "인증 테스트")
-    public ResponseEntity<Map<String, Object>> test() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "인증 성공!");
-        response.put("timestamp", LocalDateTime.now());
-        return ResponseEntity.ok(response);
+    private String checkDatabase() {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.isValid(1) ? "UP" : "DOWN";
+        } catch (Exception e) {
+            return "DOWN";
+        }
+    }
+
+    private String checkRedis() {
+        try {
+            if (redisTemplate.getConnectionFactory() != null) {
+                redisTemplate.getConnectionFactory().getConnection().ping();
+                return "UP";
+            }
+            return "DOWN";
+        } catch (Exception e) {
+            return "DOWN";
+        }
     }
 }
