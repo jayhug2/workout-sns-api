@@ -123,6 +123,11 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    public Page<PostResponse> getFeed(Long userId, Pageable pageable) {
+        Page<Post> posts = postRepository.findFeedByUserId(userId, pageable);
+        return posts.map(PostResponse::from);
+    }
+
     public Page<PostResponse> searchByTitle(String keyword, Pageable pageable) {
         Page<Post> posts = postRepository.findByTitleContainingIgnoreCase(keyword, pageable);
         return posts.map(PostResponse::from);
