@@ -1,16 +1,25 @@
 package com.workout.api.service;
 
 import com.workout.api.dto.LoginResult;
+import com.workout.api.dto.PostResponse;
+import com.workout.api.dto.UserProfileResponse;
 import com.workout.api.dto.UserResponse;
+import com.workout.api.entity.Post;
 import com.workout.api.entity.User;
+import com.workout.api.repository.FollowRepository;
+import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import com.workout.api.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -21,6 +30,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
     @Transactional
     public User createUser(String email, String password, String nickname) {
@@ -59,4 +70,31 @@ public class UserService {
         Page<User> users = userRepository.findByNicknameContainingIgnoreCase(keyword, pageable);
         return users.map(UserResponse::from);
     }
+
+    public UserProfileResponse getProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Long postCount = postRepository.countByUserId(userId);
+
+        Long followerCount = followRepository.countByFollowingId(userId);
+
+        Long followingCount = followRepository.countByFollowerId(userId);
+
+        Pageable pageable = PageRequest.of(0, 3);
+        Page<Post> recentPostsPage = postRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+        List<PostResponse> recentPostResponses = recentPostsPage.getContent().stream()
+                .map(PostResponse::from)
+                .toList();
+
+        return new UserProfileResponse(
+                user.getId(),
+                user.getNickname(),
+                postCount,
+                followerCount,
+                followingCount,
+                recentPostResponses
+        );
+    }
+
 }
