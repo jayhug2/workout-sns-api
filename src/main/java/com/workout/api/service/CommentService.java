@@ -3,10 +3,12 @@ package com.workout.api.service;
 import com.workout.api.entity.Comment;
 import com.workout.api.entity.Post;
 import com.workout.api.entity.User;
+import com.workout.api.event.CommentCreatedEvent;
 import com.workout.api.repository.CommentRepository;
 import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Comment createComment(Long postId, Long userId, String content) {
@@ -38,7 +41,11 @@ public class CommentService {
                 .user(user)
                 .build();
 
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        eventPublisher.publishEvent(new CommentCreatedEvent(this, savedComment));
+
+        return savedComment;
     }
 
     public Page<Comment> getCommentsByPost(Long postId, Pageable pageable) {
