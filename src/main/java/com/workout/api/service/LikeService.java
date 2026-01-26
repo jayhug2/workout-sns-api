@@ -3,10 +3,12 @@ package com.workout.api.service;
 import com.workout.api.entity.Like;
 import com.workout.api.entity.Post;
 import com.workout.api.entity.User;
+import com.workout.api.event.LikeCreatedEvent;
 import com.workout.api.repository.LikeRepository;
 import com.workout.api.repository.PostRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public boolean toggleLike(Long postId, Long userId) {
@@ -42,7 +45,9 @@ public class LikeService {
                     .post(post)
                     .user(user)
                     .build();
-            likeRepository.save(like);
+            Like savedLike = likeRepository.save(like);
+
+            eventPublisher.publishEvent(new LikeCreatedEvent(this, savedLike));
             return true;
         }
     }

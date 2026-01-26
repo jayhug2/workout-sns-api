@@ -3,9 +3,11 @@ package com.workout.api.service;
 
 import com.workout.api.entity.Follow;
 import com.workout.api.entity.User;
+import com.workout.api.event.FollowCreatedEvent;
 import com.workout.api.repository.FollowRepository;
 import com.workout.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.parameters.P;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public boolean toggleFollow(Long followerId, Long followingId) {
@@ -44,7 +47,9 @@ public class FollowService {
                     .following(followingUser)
                     .build();
 
-            followRepository.save(follow);
+            Follow savedFollow = followRepository.save(follow);
+
+            eventPublisher.publishEvent(new FollowCreatedEvent(this, savedFollow));
             return true;
         }
     }
