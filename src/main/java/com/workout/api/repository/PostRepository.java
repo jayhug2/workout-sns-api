@@ -29,4 +29,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Long countByUserId(Long userId);
 
     Page<Post> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    @Query(value = """
+    SELECT p.id, p.title, p.content, p.user_id, p.created_at, p.updated_at
+    FROM posts p
+    LEFT JOIN likes l ON l.post_id = p.id
+    LEFT JOIN comments c ON c.post_id = p.id
+    GROUP BY p.id, p.title, p.content, p.user_id, p.created_at, p.updated_at
+    ORDER BY ((COUNT(DISTINCT l.id) * 2) + (COUNT(DISTINCT c.id) * 1) - 
+              (TIMESTAMPDIFF(HOUR, p.created_at, CURRENT_TIMESTAMP) / 24.0)) DESC
+    """,
+            nativeQuery = true)
+    Page<Post> findPopularPosts(Pageable pageable);
 }
