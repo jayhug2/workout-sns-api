@@ -17,6 +17,8 @@ public class PostResponse {
     private Long userId;
     private String userNickName;
     private List<String> imageUrls;
+    private Long likeCount;
+    private Long commentCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,6 +35,8 @@ public class PostResponse {
                 post.getUser().getId(),
                 post.getUser().getNickname(),
                 imageUrls,
+                (long) post.getLikes().size(),
+                (long) post.getComments().size(),
                 post.getCreatedAt(),
                 post.getUpdatedAt()
         );

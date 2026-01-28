@@ -67,4 +67,11 @@ public class PostController {
         postService.delete(id, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/popular")
+    @Operation(summary = "인기 게시글 조회")
+    public ResponseEntity<Page<PostResponse>> getPopularPosts(Pageable pageable) {
+        Page<PostResponse> posts = postService.getPopularPosts(pageable);
+        return ResponseEntity.ok(posts);
+    }
 }

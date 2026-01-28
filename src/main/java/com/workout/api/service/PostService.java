@@ -142,4 +142,9 @@ public class PostService {
         Page<Post> posts = postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable);
         return posts.map(PostResponse::from);
     }
+
+    public Page<PostResponse> getPopularPosts(Pageable pageable) {
+        Page<Post> posts = postRepository.findPopularPosts(pageable);
+        return posts.map(PostResponse::from);
+    }
 }
