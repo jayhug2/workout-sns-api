@@ -1,13 +1,10 @@
 package com.workout.api.controller;
 
-import com.workout.api.dto.*;
-import com.workout.api.entity.User;
+import com.workout.api.dto.UserProfileResponse;
 import com.workout.api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,35 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-
-    @PostMapping("/signup")
-    @Operation(summary = "회원가입")
-    public ResponseEntity<UserResponse> signup(@Valid @RequestBody UserSignupRequest request) {
-        User user = userService.createUser(
-                request.getEmail(),
-                request.getPassword(),
-                request.getNickname()
-        );
-
-        UserResponse response = UserResponse.from(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @PostMapping("/login")
-    @Operation(summary = "로그인")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        LoginResult result = userService.login(request.getEmail(), request.getPassword());
-
-
-        LoginResponse response = new LoginResponse(
-                result.getUser().getId(),
-                result.getUser().getEmail(),
-                result.getUser().getNickname(),
-                "로그인 성공",
-                result.getToken()
-        );
-        return ResponseEntity.ok(response);
-    }
 
     @GetMapping("/{userId}/profile")
     @Operation(summary = "사용자 프로필 조회")
