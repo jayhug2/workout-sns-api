@@ -47,7 +47,7 @@ public class PostController {
         return ResponseEntity.ok(responses);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Operation(summary = "게시글 수정")
     public ResponseEntity<PostResponse> update(
             @PathVariable Long id,

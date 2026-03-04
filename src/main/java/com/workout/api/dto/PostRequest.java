@@ -21,5 +21,5 @@ public class PostRequest {
     @NotBlank(message = "내용은 필수입니다")
     private String content;
 
-    private List<Long> imageIds = new ArrayList<>();
+    private List<Long> imageIds;
 }

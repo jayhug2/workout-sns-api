@@ -77,35 +77,26 @@ public class PostService {
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
 
-        if (request.getImageIds() != null && !request.getImageIds().isEmpty()) {
+        if (request.getImageIds() != null) {
             // 기존 이미지 연결 해제
             for (Image existingImage : post.getImages()) {
                 existingImage.setPost(null);
             }
             post.getImages().clear();
 
-            // 새 이미지 연결
-            List<Image> images = imageRepository.findAllById(request.getImageIds());
-
-            for (Image image : images) {
-                // 권한 확인
-                if (!image.getUser().getId().equals(userId)) {
-                    throw new IllegalArgumentException("다른 사용자의 이미지는 사용할 수 없습니다.");
+            if (!request.getImageIds().isEmpty()) {
+                List<Image> images = imageRepository.findAllById(request.getImageIds());
+                for (Image image : images) {
+                    if (!image.getUser().getId().equals(userId)) {
+                        throw new IllegalArgumentException("다른 사용자의 이미지는 사용할 수 없습니다.");
+                    }
+                    if (image.getPost() != null) {
+                        throw new IllegalArgumentException("이미 다른 게시글에 연결된 이미지입니다.");
+                    }
+                    post.addImage(image);
                 }
-                if (image.getPost() != null) {
-                    throw new IllegalArgumentException("이미 다른 게시글에 연결된 이미지입니다.");
-                }
-
-                post.addImage(image);
+                imageRepository.saveAll(images);
             }
-
-            imageRepository.saveAll(images);
-        } else {
-            // imageIds가 비어있으면 모든 이미지 제거
-            for (Image existingImage : post.getImages()) {
-                existingImage.setPost(null);
-            }
-            post.getImages().clear();
         }
 
         return PostResponse.from(post);
